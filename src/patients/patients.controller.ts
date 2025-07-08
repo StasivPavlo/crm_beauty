@@ -1,8 +1,9 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { PatientsService } from './patients.service';
 import { CreatePatientDto } from './dto/create-patient-dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Patient } from './patients.model';
+import { PaginationDto } from './dto/pagination.dto';
 
 @ApiTags('Patients')
 @Controller('patients')
@@ -12,8 +13,8 @@ export class PatientsController {
   @ApiOperation({ summary: 'Get all Patients' })
   @ApiResponse({ status: 200, type: [Patient] })
   @Get()
-  getAllPatients() {
-    return this.PatientService.getAllPatients();
+  getAllPatients(@Query() paginationDto: PaginationDto) {
+    return this.PatientService.findAll(paginationDto);
   }
 
   @ApiOperation({ summary: 'Create Patient' })

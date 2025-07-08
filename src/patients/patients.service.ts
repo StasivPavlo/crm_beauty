@@ -1,6 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Patient } from './patients.model';
 import { CreatePatientDto } from './dto/create-patient-dto';
+import { PaginationDto } from './dto/pagination.dto';
 
 @Injectable()
 export class PatientsService {
@@ -9,8 +10,26 @@ export class PatientsService {
     private PatientRepository: typeof Patient,
   ) {}
 
-  getAllPatients() {
-    return this.PatientRepository.findAll<Patient>();
+  async findAll(paginationDto: PaginationDto) {
+    const { page = '1', limit = '10' } = paginationDto;
+
+    const pageNumber = parseInt(page, 10);
+    const limitNumber = parseInt(limit, 10);
+    const offset = (pageNumber - 1) * limitNumber;
+
+    const { rows: data, count: total } = await this.PatientRepository.findAndCountAll({
+      offset,
+      limit: limitNumber,
+      order: [['createdAt', 'DESC']],
+    });
+
+    return {
+      data,
+      total,
+      page: pageNumber,
+      limit: limitNumber,
+      totalPages: Math.ceil(total / limitNumber),
+    };
   }
 
   getPatient(id: number) {
