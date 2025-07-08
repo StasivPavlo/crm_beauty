@@ -14,12 +14,15 @@ async function seed() {
     database: process.env.POSTGRES_DB,
 
     dialect: 'postgres',
-    dialectOptions: {
-      ssl: {
-        require: true,
-        rejectUnauthorized: false,
-      },
-    },
+    dialectOptions:
+      process.env.DB_SSL_ENABLE === 'true'
+        ? {
+            ssl: {
+              require: false,
+              rejectUnauthorized: false,
+            },
+          }
+        : {},
   });
 
   sequelize.addModels([Patient]);

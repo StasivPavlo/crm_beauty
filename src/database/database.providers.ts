@@ -1,5 +1,6 @@
 import { Sequelize } from 'sequelize-typescript';
 import { Patient } from '../patients/patients.model';
+import * as process from 'node:process';
 
 export const databaseProviders = [
   {
@@ -13,12 +14,15 @@ export const databaseProviders = [
         database: process.env.POSTGRES_DB,
 
         dialect: 'postgres',
-        dialectOptions: {
-          ssl: {
-            require: true,
-            rejectUnauthorized: false,
-          },
-        },
+        dialectOptions:
+          process.env.DB_SSL_ENABLE === 'true'
+            ? {
+                ssl: {
+                  require: false,
+                  rejectUnauthorized: false,
+                },
+              }
+            : {},
       });
       sequelize.addModels([Patient]);
       await sequelize.sync();
