@@ -6,6 +6,8 @@ async function start() {
   const PORT = process.env.PORT || 8080;
   const app = await NestFactory.create(AppModule);
 
+  app.enableCors();
+
   const config = new DocumentBuilder()
     .setTitle('Beauty CRM')
     .setDescription('REST API Documentation')
