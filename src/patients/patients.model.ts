@@ -39,7 +39,7 @@ export class Patient extends Model<Patient, PatientCreationAttrs> {
     example: '+380552159315',
     description: 'Patient phone number',
   })
-  @Column({ type: DataType.STRING, allowNull: false })
+  @Column({ type: DataType.STRING, allowNull: false, unique: true })
   declare phoneNumber: string;
 
   @ApiProperty({

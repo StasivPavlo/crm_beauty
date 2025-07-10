@@ -21,7 +21,6 @@ export class PatientsController {
   @ApiResponse({ status: 200, type: Patient })
   @Post()
   createPatient(@Body() dto: CreatePatientDto) {
-    console.log(dto);
     return this.PatientService.createPatient(dto);
   }
 }

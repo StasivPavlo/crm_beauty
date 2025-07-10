@@ -1,12 +1,22 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Patient } from '../patients.model';
+import { IsInt, IsOptional, Min } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class PaginationDto {
   @ApiPropertyOptional({ example: 1, description: 'Page number' })
-  readonly page?: string;
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  readonly page: number = 1;
 
   @ApiPropertyOptional({ example: 10, description: 'Count of rows on page' })
-  readonly limit?: string;
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  readonly limit: number = 10;
 }
 
 export class PaginatedPatientsDto {

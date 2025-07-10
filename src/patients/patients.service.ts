@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { Patient } from './patients.model';
 import { CreatePatientDto } from './dto/create-patient-dto';
 import { PaginationDto } from './dto/pagination.dto';
@@ -11,24 +11,22 @@ export class PatientsService {
   ) {}
 
   async findAll(paginationDto: PaginationDto) {
-    const { page = '1', limit = '10' } = paginationDto;
+    const { page, limit } = paginationDto;
 
-    const pageNumber = parseInt(page, 10);
-    const limitNumber = parseInt(limit, 10);
-    const offset = (pageNumber - 1) * limitNumber;
+    const offset = (page - 1) * limit;
 
     const { rows: data, count: total } = await this.PatientRepository.findAndCountAll({
       offset,
-      limit: limitNumber,
+      limit: limit,
       order: [['createdAt', 'DESC']],
     });
 
     return {
       data,
       total,
-      page: pageNumber,
-      limit: limitNumber,
-      totalPages: Math.ceil(total / limitNumber),
+      page: page,
+      limit: limit,
+      totalPages: Math.ceil(total / limit),
     };
   }
 
@@ -36,7 +34,19 @@ export class PatientsService {
     return this.PatientRepository.findByPk<Patient>(id);
   }
 
-  createPatient(data: CreatePatientDto) {
+  async isPhoneNumberTaken(phoneNumber: string) {
+    const count = await this.PatientRepository.count({ where: { phoneNumber } });
+
+    return count > 0;
+  }
+
+  async createPatient(data: CreatePatientDto) {
+    const exist = await this.isPhoneNumberTaken(data.phoneNumber);
+
+    if (exist) {
+      throw new BadRequestException('Phone number already exists');
+    }
+
     return this.PatientRepository.create({
       ...data,
       birthday: new Date(data.birthday),
