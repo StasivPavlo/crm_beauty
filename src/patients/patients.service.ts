@@ -1,7 +1,8 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { Patient } from './patients.model';
 import { CreatePatientDto } from './dto/create-patient-dto';
 import { PaginationDto } from './dto/pagination.dto';
+import { MedicallyHistory } from '../medical-history/medical-history.model';
 
 @Injectable()
 export class PatientsService {
@@ -30,8 +31,14 @@ export class PatientsService {
     };
   }
 
-  getPatient(id: number) {
-    return this.PatientRepository.findByPk<Patient>(id);
+  async getPatient(id: number) {
+    const patient = await this.PatientRepository.findOne({ where: { id }, include: MedicallyHistory });
+
+    if (!patient) {
+      throw new NotFoundException('Patient not found');
+    }
+
+    return patient;
   }
 
   async isPhoneNumberTaken(phoneNumber: string) {

@@ -8,5 +8,6 @@ import { PatientsController } from './patients.controller';
   imports: [DatabaseModule],
   controllers: [PatientsController],
   providers: [PatientsService, ...patientsProviders],
+  exports: [PatientsService],
 })
 export class PatientsModule {}

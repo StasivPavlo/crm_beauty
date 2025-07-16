@@ -2,6 +2,7 @@ import { Sequelize } from 'sequelize-typescript';
 import { Patient } from '../patients/patients.model';
 import * as dotenv from 'dotenv';
 import { faker } from '@faker-js/faker/locale/en';
+import { MedicallyHistory } from '../medical-history/medical-history.model';
 
 dotenv.config();
 
@@ -25,7 +26,7 @@ async function seed() {
         : {},
   });
 
-  sequelize.addModels([Patient]);
+  sequelize.addModels([Patient, MedicallyHistory]);
   await sequelize.sync({ force: true });
 
   const fakePatients = Array.from({ length: 100 }).map(() => ({

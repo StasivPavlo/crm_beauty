@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, Post, Query } from '@nestjs/common';
 import { PatientsService } from './patients.service';
 import { CreatePatientDto } from './dto/create-patient-dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -9,6 +9,13 @@ import { PaginatedPatientsDto, PaginationDto } from './dto/pagination.dto';
 @Controller('patients')
 export class PatientsController {
   constructor(private PatientService: PatientsService) {}
+
+  @ApiOperation({ summary: 'Get Patient' })
+  @ApiResponse({ status: 200, description: 'Get Patient with medical histories' })
+  @Get(':id')
+  getPatient(@Param('id', ParseIntPipe) id: number) {
+    return this.PatientService.getPatient(id);
+  }
 
   @ApiOperation({ summary: 'Get all Patients' })
   @ApiResponse({ status: 200, type: PaginatedPatientsDto })
