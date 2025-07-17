@@ -11,7 +11,7 @@ interface MedicalHistoryAttrs {
 }
 
 @Table({ tableName: 'medical-history' })
-export class MedicallyHistory extends Model<MedicallyHistory, MedicalHistoryAttrs> {
+export class MedicalHistory extends Model<MedicalHistory, MedicalHistoryAttrs> {
   @ApiProperty({ example: 1, description: 'unique identifier' })
   @Column({
     type: DataType.INTEGER,
@@ -42,6 +42,8 @@ export class MedicallyHistory extends Model<MedicallyHistory, MedicalHistoryAttr
   @Column({ type: DataType.ARRAY(DataType.STRING), allowNull: true })
   declare skinDiseases: string[];
 
-  @BelongsTo(() => Patient)
+  @BelongsTo(() => Patient, {
+    onDelete: 'CASCADE',
+  })
   patient: Patient[];
 }

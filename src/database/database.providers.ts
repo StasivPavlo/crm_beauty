@@ -1,7 +1,7 @@
 import { Sequelize } from 'sequelize-typescript';
 import { Patient } from '../patients/patients.model';
 import * as process from 'node:process';
-import { MedicallyHistory } from '../medical-history/medical-history.model';
+import { MedicalHistory } from '../medical-history/medical-history.model';
 
 export const databaseProviders = [
   {
@@ -25,7 +25,7 @@ export const databaseProviders = [
               }
             : {},
       });
-      sequelize.addModels([Patient, MedicallyHistory]);
+      sequelize.addModels([Patient, MedicalHistory]);
       await sequelize.sync();
       return sequelize;
     },

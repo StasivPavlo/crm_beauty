@@ -2,7 +2,7 @@ import { Sequelize } from 'sequelize-typescript';
 import { Patient } from '../patients/patients.model';
 import * as dotenv from 'dotenv';
 import { faker } from '@faker-js/faker/locale/en';
-import { MedicallyHistory } from '../medical-history/medical-history.model';
+import { MedicalHistory } from '../medical-history/medical-history.model';
 
 dotenv.config();
 
@@ -26,7 +26,7 @@ async function seed() {
         : {},
   });
 
-  sequelize.addModels([Patient, MedicallyHistory]);
+  sequelize.addModels([Patient, MedicalHistory]);
   await sequelize.sync({ force: true });
 
   const fakePatients = Array.from({ length: 100 }).map(() => ({
@@ -37,7 +37,17 @@ async function seed() {
     email: faker.internet.email(),
   }));
 
-  await Patient.bulkCreate(fakePatients);
+  const createdPatients = await Patient.bulkCreate(fakePatients, { returning: true });
+
+  const histories = createdPatients.map((patient) => ({
+    patientId: patient.id,
+    allergic: faker.lorem.words(3).split(' '),
+    chronicDiseases: faker.lorem.words(3).split(' '),
+    takingMedication: faker.lorem.words(3).split(' '),
+    skinDiseases: faker.lorem.words(3).split(' '),
+  }));
+
+  await MedicalHistory.bulkCreate(histories);
 
   console.log('✅ Seeded successfully!');
   await sequelize.close();

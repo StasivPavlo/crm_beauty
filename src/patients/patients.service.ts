@@ -1,8 +1,9 @@
-import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { Patient } from './patients.model';
 import { CreatePatientDto } from './dto/create-patient-dto';
-import { PaginationDto } from './dto/pagination.dto';
-import { MedicallyHistory } from '../medical-history/medical-history.model';
+import { PaginationPatientsDto } from './dto/pagination-patients.dto';
+import { MedicalHistory } from '../medical-history/medical-history.model';
+import { UpdatePatientDto } from './dto/update-patient.dto';
 
 @Injectable()
 export class PatientsService {
@@ -11,7 +12,25 @@ export class PatientsService {
     private PatientRepository: typeof Patient,
   ) {}
 
-  async findAll(paginationDto: PaginationDto) {
+  async checkIsPhoneNumberExist(phoneNumber: string) {
+    const count = await this.PatientRepository.count({ where: { phoneNumber } });
+
+    if (count) {
+      throw new ConflictException('The phone number is already taken');
+    }
+  }
+
+  async getPatientById(id: number) {
+    const patient = await this.PatientRepository.findByPk(id);
+
+    if (!patient) {
+      throw new NotFoundException('Patient not found');
+    }
+
+    return patient;
+  }
+
+  async findAll(paginationDto: PaginationPatientsDto) {
     const { page, limit } = paginationDto;
 
     const offset = (page - 1) * limit;
@@ -31,8 +50,8 @@ export class PatientsService {
     };
   }
 
-  async getPatient(id: number) {
-    const patient = await this.PatientRepository.findOne({ where: { id }, include: MedicallyHistory });
+  async getPatientWithMedicalHistory(id: number) {
+    const patient = await this.PatientRepository.findByPk(id, { include: MedicalHistory });
 
     if (!patient) {
       throw new NotFoundException('Patient not found');
@@ -41,22 +60,30 @@ export class PatientsService {
     return patient;
   }
 
-  async isPhoneNumberTaken(phoneNumber: string) {
-    const count = await this.PatientRepository.count({ where: { phoneNumber } });
-
-    return count > 0;
-  }
-
-  async createPatient(data: CreatePatientDto) {
-    const exist = await this.isPhoneNumberTaken(data.phoneNumber);
-
-    if (exist) {
-      throw new BadRequestException('Phone number already exists');
-    }
+  async createPatient(dto: CreatePatientDto) {
+    await this.checkIsPhoneNumberExist(dto.phoneNumber);
 
     return this.PatientRepository.create({
-      ...data,
-      birthday: new Date(data.birthday),
+      ...dto,
+      birthday: new Date(dto.birthday),
     });
+  }
+
+  async updatePatient(id: number, dto: UpdatePatientDto) {
+    const patient = await this.getPatientById(id);
+
+    if (dto.phoneNumber) {
+      await this.checkIsPhoneNumberExist(dto.phoneNumber);
+    }
+
+    const birthday = dto.birthday ? new Date(dto.birthday) : undefined;
+
+    return patient.update({ ...dto, birthday });
+  }
+
+  async deletePatient(id: number) {
+    const patient = await this.getPatientById(id);
+
+    await patient.destroy();
   }
 }

@@ -4,7 +4,7 @@ import { IsArray, IsInt, IsString } from 'class-validator';
 
 export class CreateMedicalHistoryDto {
   @ApiProperty({
-    example: 12,
+    example: 1,
     description: 'Unique identifier of the patient (referencing the patient table)',
   })
   @Type(() => Number)

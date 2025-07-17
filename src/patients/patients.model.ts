@@ -1,6 +1,6 @@
 import { Column, DataType, HasOne, Model, Table } from 'sequelize-typescript';
 import { ApiProperty } from '@nestjs/swagger';
-import { MedicallyHistory } from '../medical-history/medical-history.model';
+import { MedicalHistory } from '../medical-history/medical-history.model';
 
 interface PatientCreationAttrs {
   firstName: string;
@@ -50,6 +50,6 @@ export class Patient extends Model<Patient, PatientCreationAttrs> {
   @Column({ type: DataType.STRING, allowNull: false })
   declare email: string;
 
-  @HasOne(() => MedicallyHistory)
-  medicalHistory: MedicallyHistory;
+  @HasOne(() => MedicalHistory)
+  medicalHistory: MedicalHistory;
 }

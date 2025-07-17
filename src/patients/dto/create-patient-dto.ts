@@ -23,7 +23,7 @@ export class CreatePatientDto {
     example: '+380552159315',
     description: 'Patient phone number',
   })
-  @IsMobilePhone('uk-UA')
+  @IsMobilePhone('uk-UA', {}, { message: 'Phone number must be ukrainian and valid' })
   readonly phoneNumber: string;
 
   @ApiProperty({
