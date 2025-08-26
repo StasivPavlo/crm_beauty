@@ -18,12 +18,15 @@ export class PaginationPatientsDto {
   @Min(1)
   readonly limit: number = 10;
 
-  @ApiPropertyOptional({ example: 'createdAt', description: 'Field to sort by' })
+  @ApiPropertyOptional({
+    example: 'createdAt',
+    description: 'Field to sort by (createdAt, updatedAt, firstName, lastName, birthday, phoneNumber, email)',
+  })
   @IsOptional()
   @IsString()
   readonly sortBy?: string = 'createdAt';
 
-  @ApiPropertyOptional({ example: 'DESC', description: 'Sort order ASC|DESC' })
+  @ApiPropertyOptional({ example: 'DESC', description: 'Sort order ASC | DESC' })
   @IsOptional()
   @IsString()
   @IsIn(['ASC', 'DESC'])
