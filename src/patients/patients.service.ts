@@ -1,9 +1,10 @@
 import { ConflictException, Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { Patient } from './patients.model';
+import { Patient, PatientCreationAttrs } from './patients.model';
 import { CreatePatientDto } from './dto/create-patient-dto';
 import { PaginationPatientsDto } from './dto/pagination-patients.dto';
-import { MedicalHistory } from '../medical-history/medical-history.model';
+import { MedicalHistory, MedicalHistoryAttrs } from '../medical-history/medical-history.model';
 import { UpdatePatientDto } from './dto/update-patient.dto';
+import { Op, WhereOptions } from 'sequelize';
 
 @Injectable()
 export class PatientsService {
@@ -31,21 +32,73 @@ export class PatientsService {
   }
 
   async findAll(paginationDto: PaginationPatientsDto) {
-    const { page, limit } = paginationDto;
+    const {
+      page = 1,
+      limit = 10,
+      sortBy = 'createdAt',
+      sortOrder = 'DESC',
+      search,
+      birthdayFrom,
+      birthdayTo,
+      allergic,
+      chronicDisease,
+      medication,
+      skinDisease,
+    } = paginationDto;
 
     const offset = (page - 1) * limit;
 
+    const where: WhereOptions<PatientCreationAttrs> = {};
+    const medicalWhere: WhereOptions<MedicalHistoryAttrs> = {};
+
+    if (search) {
+      where[Op.or] = [
+        { firstName: { [Op.iLike]: `%${search}%` } },
+        { lastName: { [Op.iLike]: `%${search}%` } },
+        { email: { [Op.iLike]: `%${search}%` } },
+        { phoneNumber: { [Op.iLike]: `%${search}%` } },
+      ];
+    }
+
+    if (birthdayFrom || birthdayTo) {
+      where.birthday = {};
+      if (birthdayFrom) where.birthday[Op.gte] = birthdayFrom;
+      if (birthdayTo) where.birthday[Op.lte] = birthdayTo;
+    }
+
+    if (allergic) {
+      medicalWhere.allergic = { [Op.contains]: [allergic] };
+    }
+    if (chronicDisease) {
+      medicalWhere.chronicDiseases = { [Op.contains]: [chronicDisease] };
+    }
+    if (medication) {
+      medicalWhere.takingMedication = { [Op.contains]: [medication] };
+    }
+    if (skinDisease) {
+      medicalWhere.skinDiseases = { [Op.contains]: [skinDisease] };
+    }
+
     const { rows: data, count: total } = await this.PatientRepository.findAndCountAll({
+      where,
       offset,
-      limit: limit,
-      order: [['createdAt', 'DESC']],
+      limit,
+      order: [[sortBy, sortOrder]],
+      include: [
+        {
+          model: MedicalHistory,
+          as: 'medicalHistory',
+          required: Object.keys(medicalWhere).length > 0,
+          where: medicalWhere,
+        },
+      ],
     });
 
     return {
       data,
       total,
-      page: page,
-      limit: limit,
+      page,
+      limit,
       totalPages: Math.ceil(total / limit),
     };
   }

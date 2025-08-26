@@ -2,7 +2,7 @@ import { BelongsTo, Column, DataType, ForeignKey, Model, Table } from 'sequelize
 import { ApiProperty } from '@nestjs/swagger';
 import { Patient } from '../patients/patients.model';
 
-interface MedicalHistoryAttrs {
+export interface MedicalHistoryAttrs {
   patientId: number;
   allergic: string[];
   chronicDiseases: string[];

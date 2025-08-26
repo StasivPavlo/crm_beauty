@@ -2,7 +2,7 @@ import { Column, DataType, HasOne, Model, Table } from 'sequelize-typescript';
 import { ApiProperty } from '@nestjs/swagger';
 import { MedicalHistory } from '../medical-history/medical-history.model';
 
-interface PatientCreationAttrs {
+export interface PatientCreationAttrs {
   firstName: string;
   lastName: string;
   birthday: Date;
