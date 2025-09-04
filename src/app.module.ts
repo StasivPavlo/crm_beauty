@@ -6,7 +6,7 @@ import { MedicalHistoryModule } from './medical-history/medical-history.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: '.env',
+      envFilePath: `.env.${process.env.NODE_ENV || 'development'}`,
     }),
     PatientsModule,
     MedicalHistoryModule,
