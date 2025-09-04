@@ -18,9 +18,12 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "create": "cross-env NODE_ENV=$NODE_ENV npx sequelize-cli db:create --env $NODE_ENV",
-    "migrate": "cross-env NODE_ENV=$NODE_ENV npx sequelize-cli db:migrate --env $NODE_ENV",
-    "seed": "cross-env NODE_ENV=$NODE_ENV npx sequelize-cli db:seed:all --env $NODE_ENV",
+    "db:create:dev": "cross-env NODE_ENV=development npx sequelize-cli db:create --env development",
+    "db:migrate:dev": "cross-env NODE_ENV=development npx sequelize-cli db:migrate --env development",
+    "db:seed:dev": "cross-env NODE_ENV=development npx sequelize-cli db:seed:all --env development",
+    "db:create:prod": "cross-env NODE_ENV=production npx sequelize-cli db:create --env production",
+    "db:migrate:prod": "cross-env NODE_ENV=production npx sequelize-cli db:migrate --env production",
+    "db:seed:prod": "cross-env NODE_ENV=production npx sequelize-cli db:seed:all --env production",
     "prepare": "husky install"
   },
   "lint-staged": {
