@@ -24,6 +24,8 @@
     "db:create:prod": "cross-env NODE_ENV=production npx sequelize-cli db:create --env production",
     "db:migrate:prod": "cross-env NODE_ENV=production npx sequelize-cli db:migrate --env production",
     "db:seed:prod": "cross-env NODE_ENV=production npx sequelize-cli db:seed:all --env production",
+    "db:reset:dev": "cross-env NODE_ENV=development npx sequelize-cli db:drop --env development && cross-env NODE_ENV=development npx sequelize-cli db:create --env development && cross-env NODE_ENV=development npx sequelize-cli db:migrate --env development",
+    "db:reset:prod": "cross-env NODE_ENV=production npx sequelize-cli db:drop --env production && cross-env NODE_ENV=production npx sequelize-cli db:create --env production && cross-env NODE_ENV=production npx sequelize-cli db:migrate --env production",
     "prepare": "husky install"
   },
   "lint-staged": {
